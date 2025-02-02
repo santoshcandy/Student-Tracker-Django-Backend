@@ -5,8 +5,8 @@ from django.contrib.auth.hashers import check_password
 from django.contrib.auth.hashers import make_password
 from rest_framework.views import APIView
 from rest_framework import status
-from .models import Teacher,Mark,Student,Class
-from .serializers import StudentSerializer,MarkSerializer,ClassSerializer,TeacherSerializer
+from .models import Teacher,Mark,Student,Class,Subject
+from .serializers import StudentSerializer,MarkSerializer,ClassSerializer,TeacherSerializer,SubjectSerializer
 from rest_framework.response import Response
 from datetime import timezone
 # class TeacherRegisterView(APIView):
@@ -64,7 +64,13 @@ class ClassRegisterView(APIView):
             return Response({'message':"class registered succesfully"},status=status.HTTP_201_CREATED)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
-
+class SubjectRegister(APIView):
+    def post(self,request):
+        serializer=SubjectSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message':"class registered succesfully"},status=status.HTTP_201_CREATED)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 class TeacherLoginView(APIView):
     def post(self, request):
@@ -79,7 +85,8 @@ class TeacherLoginView(APIView):
         teacher = Teacher.objects.filter(phone_number=phone).first()
         
         if teacher and check_password(password, teacher.password):
-            return Response({"message": "Login successful", 'teacher_id': teacher.id})
+            print({'teacher_id': teacher.id,"subject":teacher.subject})
+            return Response({"message": "Login successful", 'teacher_id': teacher.id,"subject":teacher.subject})
         
       
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -88,6 +95,14 @@ class ClassListView(APIView):
     def get(self, request):
         classes=Class.objects.all()
         serializer=ClassSerializer(classes,many=True)
+        return Response(serializer.data)
+    
+
+
+class SubjectListView(APIView):
+    def get(self, request):
+        subject=Subject.objects.all()
+        serializer=SubjectSerializer(subject,many=True)
         return Response(serializer.data)
     
 # class StudentListView(APIView):

@@ -41,6 +41,15 @@ class Class(models.Model):
     def __str__(self):
         return self.name
 
+class Subject(models.Model):
+    name= models.CharField(max_length=20,unique=True)
+ 
+    def __str__(self):
+        return self.name
+
+
+
+
 class Student(models.Model):
     name=models.CharField(max_length=100)
     reg_number = models.CharField(max_length=20,unique=True)
